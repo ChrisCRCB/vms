@@ -6,7 +6,7 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
 import '../database/database.dart';
-import 'volunteer_context.dart';
+import 'volunteer_group_context.dart';
 import 'volunteer_subject_context.dart';
 
 /// Provide the application documents directory.
@@ -59,15 +59,17 @@ final volunteerSubjectsProvider =
     ..where(database.volunteerSubjects.volunteerId.equals(volunteer.id))
     ..orderBy([OrderingTerm.asc(database.subjects.name)]);
   final results = await query.get();
-  return results
-      .map(
-        (final e) => VolunteerSubjectContext(
-          volunteer: volunteer,
-          value: e.readTable(database.subjects),
-          type: e.readTable(database.volunteerSubjects).subjectType,
-        ),
-      )
-      .toList();
+  return results.map(
+    (final e) {
+      final volunteerSubject = e.readTable(database.volunteerSubjects);
+      return VolunteerSubjectContext(
+        volunteer: volunteer,
+        volunteerSubject: volunteerSubject,
+        subject: e.readTable(database.subjects),
+        type: volunteerSubject.subjectType,
+      );
+    },
+  ).toList();
 });
 
 /// Get all groups in the database.
@@ -78,7 +80,7 @@ final groupsProvider = FutureProvider<List<Group>>((final ref) async {
 
 /// Get the groups for a particular volunteer.
 final volunteerGroupsProvider =
-    FutureProvider.family<List<VolunteerContext<Group>>, Volunteer>(
+    FutureProvider.family<List<VolunteerGroupContext>, Volunteer>(
         (final ref, final volunteer) async {
   final database = await ref.watch(databaseProvider.future);
   final query = database.select(database.volunteerGroups).join([
@@ -92,9 +94,10 @@ final volunteerGroupsProvider =
   final results = await query.get();
   return results
       .map(
-        (final e) => VolunteerContext(
+        (final e) => VolunteerGroupContext(
           volunteer: volunteer,
-          value: e.readTable(database.groups),
+          volunteerGroup: e.readTable(database.volunteerGroups),
+          group: e.readTable(database.groups),
         ),
       )
       .toList();

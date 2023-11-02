@@ -1,8 +1,11 @@
-import 'package:backstreets_widgets/widgets/center_text.dart';
-import 'package:backstreets_widgets/widgets/searchable_list_view.dart';
+import 'package:backstreets_widgets/util.dart';
+import 'package:backstreets_widgets/widgets.dart';
+import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../constants.dart';
+import '../../database/database.dart';
 import '../../extensions.dart';
 import '../../providers/providers.dart';
 
@@ -30,10 +33,45 @@ class SubjectsTab extends ConsumerWidget {
           final subject = data[index];
           return SearchableListTile(
             searchString: subject.name,
-            child: ListTile(
-              autofocus: index == 0,
-              title: Text(subject.name),
-              onTap: () {},
+            child: CommonShortcuts(
+              deleteCallback: () => confirm(
+                context: context,
+                message: 'Delete ${subject.name}?',
+                title: confirmDeleteTitle,
+                yesCallback: () async {
+                  Navigator.pop(context);
+                  final database = await ref.read(databaseProvider.future);
+                  await database.subjectsDao.deleteSubject(subject);
+                  ref.invalidate(subjectsProvider);
+                },
+              ),
+              child: ListTile(
+                autofocus: index == 0,
+                title: Text(subject.name),
+                onTap: () => pushWidget(
+                  context: context,
+                  builder: (final context) => GetText(
+                    onDone: (final value) async {
+                      Navigator.pop(context);
+                      final database = await ref.read(
+                        databaseProvider.future,
+                      );
+                      await database.subjectsDao.editSubject(
+                        subject: subject,
+                        companion: SubjectsCompanion(name: Value(value)),
+                      );
+                      ref
+                        ..invalidate(subjectsProvider)
+                        ..invalidate(volunteerSubjectsProvider);
+                    },
+                    labelText: 'Name',
+                    text: subject.name,
+                    title: 'Subject Name',
+                    tooltip: 'Save',
+                    validator: notEmptyValidator,
+                  ),
+                ),
+              ),
             ),
           );
         },

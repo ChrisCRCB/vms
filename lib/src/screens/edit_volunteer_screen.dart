@@ -70,8 +70,9 @@ class EditVolunteerScreen extends ConsumerWidget {
               title: 'Groups',
               icon: const Text('The groups this volunteer helps out at'),
               builder: (final context) {
-                final groupsValue =
-                    ref.watch(volunteerGroupsProvider.call(volunteer));
+                final groupsValue = ref.watch(
+                  volunteerGroupsProvider.call(volunteer),
+                );
                 return groupsValue.simpleWhen((final data) {
                   if (data.isEmpty) {
                     return CenterText(
@@ -83,14 +84,28 @@ class EditVolunteerScreen extends ConsumerWidget {
                   return BuiltSearchableListView(
                     items: data,
                     builder: (final context, final index) {
-                      final volunteerContext = data[index];
-                      final group = volunteerContext.value;
+                      final volunteerGroupContext = data[index];
+                      final group = volunteerGroupContext.group;
                       return SearchableListTile(
                         searchString: group.name,
-                        child: ListTile(
-                          autofocus: index == 0,
-                          title: Text(group.name),
-                          onTap: () {},
+                        child: CommonShortcuts(
+                          deleteCallback: () async {
+                            final database = await ref.read(
+                              databaseProvider.future,
+                            );
+                            await database.volunteerGroupsDao
+                                .deleteVolunteerGroup(
+                              volunteerGroupContext.volunteerGroup,
+                            );
+                            ref.invalidate(
+                              volunteerGroupsProvider.call(volunteer),
+                            );
+                          },
+                          child: ListTile(
+                            autofocus: index == 0,
+                            title: Text(group.name),
+                            onTap: () {},
+                          ),
                         ),
                       );
                     },
@@ -115,16 +130,31 @@ class EditVolunteerScreen extends ConsumerWidget {
                   return BuiltSearchableListView(
                     items: data,
                     builder: (final context, final index) {
-                      final volunteerContext = data[index];
-                      final subject = volunteerContext.value;
-                      final typeName = volunteerContext.type.name.titleCase;
+                      final volunteerSubjectContext = data[index];
+                      final subject = volunteerSubjectContext.subject;
+                      final typeName =
+                          volunteerSubjectContext.type.name.titleCase;
                       return SearchableListTile(
                         searchString: subject.name,
-                        child: ListTile(
-                          autofocus: index == 0,
-                          title: Text(subject.name),
-                          subtitle: Text(typeName),
-                          onTap: () {},
+                        child: CommonShortcuts(
+                          deleteCallback: () async {
+                            final database = await ref.read(
+                              databaseProvider.future,
+                            );
+                            await database.volunteerSubjectsDao
+                                .deleteVolunteerSubject(
+                              volunteerSubjectContext.volunteerSubject,
+                            );
+                            ref.invalidate(
+                              volunteerSubjectsProvider.call(volunteer),
+                            );
+                          },
+                          child: ListTile(
+                            autofocus: index == 0,
+                            title: Text(subject.name),
+                            subtitle: Text(typeName),
+                            onTap: () {},
+                          ),
                         ),
                       );
                     },

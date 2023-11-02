@@ -33,29 +33,43 @@ class HomePageState extends ConsumerState<HomePage> {
             title: 'Volunteers',
             icon: const Text('The volunteers in the database'),
             builder: (final context) => CommonShortcuts(
-              newCallback: createVolunteer,
+              newCallback: newVolunteer,
               child: const VolunteersTab(),
             ),
             floatingActionButton: NewButton(
-              onPressed: createVolunteer,
+              onPressed: newVolunteer,
               tooltip: 'New Volunteer',
             ),
           ),
           TabbedScaffoldTab(
             title: 'Groups',
             icon: const Text('CRCB groups and sessions'),
-            builder: (final context) => const GroupsTab(),
+            builder: (final context) => CommonShortcuts(
+              newCallback: newGroup,
+              child: const GroupsTab(),
+            ),
+            floatingActionButton: NewButton(
+              onPressed: newGroup,
+              tooltip: 'New Group',
+            ),
           ),
           TabbedScaffoldTab(
             title: 'Subjects',
             icon: const Text('The created subjects'),
-            builder: (final context) => const SubjectsTab(),
+            builder: (final context) => CommonShortcuts(
+              newCallback: newSubject,
+              child: const SubjectsTab(),
+            ),
+            floatingActionButton: NewButton(
+              onPressed: newSubject,
+              tooltip: 'New Subject',
+            ),
           ),
         ],
       );
 
   /// Create a new volunteer.
-  Future<void> createVolunteer() async {
+  Future<void> newVolunteer() async {
     final database = await ref.read(databaseProvider.future);
     final volunteer = await database.volunteersDao.createVolunteer('No Name');
     ref.invalidate(volunteersProvider);
@@ -66,5 +80,19 @@ class HomePageState extends ConsumerState<HomePage> {
             EditVolunteerScreen(volunteerId: volunteer.id),
       );
     }
+  }
+
+  /// Create a new group.
+  Future<void> newGroup() async {
+    final database = await ref.read(databaseProvider.future);
+    await database.groupsDao.createGroup('Untitled Group');
+    ref.invalidate(groupsProvider);
+  }
+
+  /// Create a new subject.
+  Future<void> newSubject() async {
+    final database = await ref.read(databaseProvider.future);
+    await database.subjectsDao.createSubject('Untitled Subject');
+    ref.invalidate(subjectsProvider);
   }
 }
