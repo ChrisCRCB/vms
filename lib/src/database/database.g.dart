@@ -440,6 +440,186 @@ class SubjectsCompanion extends UpdateCompanion<Subject> {
   }
 }
 
+class $VolunteerSubjectTypesTable extends VolunteerSubjectTypes
+    with TableInfo<$VolunteerSubjectTypesTable, VolunteerSubjectType> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $VolunteerSubjectTypesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [id, name];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'volunteer_subject_types';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<VolunteerSubjectType> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  VolunteerSubjectType map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return VolunteerSubjectType(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+    );
+  }
+
+  @override
+  $VolunteerSubjectTypesTable createAlias(String alias) {
+    return $VolunteerSubjectTypesTable(attachedDatabase, alias);
+  }
+}
+
+class VolunteerSubjectType extends DataClass
+    implements Insertable<VolunteerSubjectType> {
+  /// The primary key for this table.
+  final int id;
+
+  /// The name of something.
+  final String name;
+  const VolunteerSubjectType({required this.id, required this.name});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    return map;
+  }
+
+  VolunteerSubjectTypesCompanion toCompanion(bool nullToAbsent) {
+    return VolunteerSubjectTypesCompanion(
+      id: Value(id),
+      name: Value(name),
+    );
+  }
+
+  factory VolunteerSubjectType.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return VolunteerSubjectType(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+    };
+  }
+
+  VolunteerSubjectType copyWith({int? id, String? name}) =>
+      VolunteerSubjectType(
+        id: id ?? this.id,
+        name: name ?? this.name,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('VolunteerSubjectType(')
+          ..write('id: $id, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is VolunteerSubjectType &&
+          other.id == this.id &&
+          other.name == this.name);
+}
+
+class VolunteerSubjectTypesCompanion
+    extends UpdateCompanion<VolunteerSubjectType> {
+  final Value<int> id;
+  final Value<String> name;
+  const VolunteerSubjectTypesCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+  });
+  VolunteerSubjectTypesCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+  }) : name = Value(name);
+  static Insertable<VolunteerSubjectType> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+    });
+  }
+
+  VolunteerSubjectTypesCompanion copyWith(
+      {Value<int>? id, Value<String>? name}) {
+    return VolunteerSubjectTypesCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('VolunteerSubjectTypesCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $VolunteerSubjectsTable extends VolunteerSubjects
     with TableInfo<$VolunteerSubjectsTable, VolunteerSubject> {
   @override
@@ -473,19 +653,18 @@ class $VolunteerSubjectsTable extends VolunteerSubjects
       requiredDuringInsert: true,
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'REFERENCES subjects (id) ON DELETE CASCADE'));
-  static const VerificationMeta _subjectTypeMeta =
-      const VerificationMeta('subjectType');
+  static const VerificationMeta _subjectTypeIdMeta =
+      const VerificationMeta('subjectTypeId');
   @override
-  late final GeneratedColumnWithTypeConverter<VolunteerSubjectType, int>
-      subjectType = GeneratedColumn<int>('subject_type', aliasedName, false,
-              type: DriftSqlType.int,
-              requiredDuringInsert: false,
-              defaultValue: Constant(VolunteerSubjectType.skill.index))
-          .withConverter<VolunteerSubjectType>(
-              $VolunteerSubjectsTable.$convertersubjectType);
+  late final GeneratedColumn<int> subjectTypeId = GeneratedColumn<int>(
+      'subject_type_id', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES volunteer_subject_types (id) ON DELETE RESTRICT'));
   @override
   List<GeneratedColumn> get $columns =>
-      [id, volunteerId, subjectId, subjectType];
+      [id, volunteerId, subjectId, subjectTypeId];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -513,7 +692,12 @@ class $VolunteerSubjectsTable extends VolunteerSubjects
     } else if (isInserting) {
       context.missing(_subjectIdMeta);
     }
-    context.handle(_subjectTypeMeta, const VerificationResult.success());
+    if (data.containsKey('subject_type_id')) {
+      context.handle(
+          _subjectTypeIdMeta,
+          subjectTypeId.isAcceptableOrUnknown(
+              data['subject_type_id']!, _subjectTypeIdMeta));
+    }
     return context;
   }
 
@@ -529,9 +713,8 @@ class $VolunteerSubjectsTable extends VolunteerSubjects
           .read(DriftSqlType.int, data['${effectivePrefix}volunteer_id'])!,
       subjectId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}subject_id'])!,
-      subjectType: $VolunteerSubjectsTable.$convertersubjectType.fromSql(
-          attachedDatabase.typeMapping
-              .read(DriftSqlType.int, data['${effectivePrefix}subject_type'])!),
+      subjectTypeId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}subject_type_id']),
     );
   }
 
@@ -539,10 +722,6 @@ class $VolunteerSubjectsTable extends VolunteerSubjects
   $VolunteerSubjectsTable createAlias(String alias) {
     return $VolunteerSubjectsTable(attachedDatabase, alias);
   }
-
-  static JsonTypeConverter2<VolunteerSubjectType, int, int>
-      $convertersubjectType = const EnumIndexConverter<VolunteerSubjectType>(
-          VolunteerSubjectType.values);
 }
 
 class VolunteerSubject extends DataClass
@@ -557,21 +736,20 @@ class VolunteerSubject extends DataClass
   final int subjectId;
 
   /// The type of the subject.
-  final VolunteerSubjectType subjectType;
+  final int? subjectTypeId;
   const VolunteerSubject(
       {required this.id,
       required this.volunteerId,
       required this.subjectId,
-      required this.subjectType});
+      this.subjectTypeId});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['volunteer_id'] = Variable<int>(volunteerId);
     map['subject_id'] = Variable<int>(subjectId);
-    {
-      final converter = $VolunteerSubjectsTable.$convertersubjectType;
-      map['subject_type'] = Variable<int>(converter.toSql(subjectType));
+    if (!nullToAbsent || subjectTypeId != null) {
+      map['subject_type_id'] = Variable<int>(subjectTypeId);
     }
     return map;
   }
@@ -581,7 +759,9 @@ class VolunteerSubject extends DataClass
       id: Value(id),
       volunteerId: Value(volunteerId),
       subjectId: Value(subjectId),
-      subjectType: Value(subjectType),
+      subjectTypeId: subjectTypeId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(subjectTypeId),
     );
   }
 
@@ -592,8 +772,7 @@ class VolunteerSubject extends DataClass
       id: serializer.fromJson<int>(json['id']),
       volunteerId: serializer.fromJson<int>(json['volunteerId']),
       subjectId: serializer.fromJson<int>(json['subjectId']),
-      subjectType: $VolunteerSubjectsTable.$convertersubjectType
-          .fromJson(serializer.fromJson<int>(json['subjectType'])),
+      subjectTypeId: serializer.fromJson<int?>(json['subjectTypeId']),
     );
   }
   @override
@@ -603,8 +782,7 @@ class VolunteerSubject extends DataClass
       'id': serializer.toJson<int>(id),
       'volunteerId': serializer.toJson<int>(volunteerId),
       'subjectId': serializer.toJson<int>(subjectId),
-      'subjectType': serializer.toJson<int>(
-          $VolunteerSubjectsTable.$convertersubjectType.toJson(subjectType)),
+      'subjectTypeId': serializer.toJson<int?>(subjectTypeId),
     };
   }
 
@@ -612,12 +790,13 @@ class VolunteerSubject extends DataClass
           {int? id,
           int? volunteerId,
           int? subjectId,
-          VolunteerSubjectType? subjectType}) =>
+          Value<int?> subjectTypeId = const Value.absent()}) =>
       VolunteerSubject(
         id: id ?? this.id,
         volunteerId: volunteerId ?? this.volunteerId,
         subjectId: subjectId ?? this.subjectId,
-        subjectType: subjectType ?? this.subjectType,
+        subjectTypeId:
+            subjectTypeId.present ? subjectTypeId.value : this.subjectTypeId,
       );
   @override
   String toString() {
@@ -625,13 +804,13 @@ class VolunteerSubject extends DataClass
           ..write('id: $id, ')
           ..write('volunteerId: $volunteerId, ')
           ..write('subjectId: $subjectId, ')
-          ..write('subjectType: $subjectType')
+          ..write('subjectTypeId: $subjectTypeId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, volunteerId, subjectId, subjectType);
+  int get hashCode => Object.hash(id, volunteerId, subjectId, subjectTypeId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -639,38 +818,38 @@ class VolunteerSubject extends DataClass
           other.id == this.id &&
           other.volunteerId == this.volunteerId &&
           other.subjectId == this.subjectId &&
-          other.subjectType == this.subjectType);
+          other.subjectTypeId == this.subjectTypeId);
 }
 
 class VolunteerSubjectsCompanion extends UpdateCompanion<VolunteerSubject> {
   final Value<int> id;
   final Value<int> volunteerId;
   final Value<int> subjectId;
-  final Value<VolunteerSubjectType> subjectType;
+  final Value<int?> subjectTypeId;
   const VolunteerSubjectsCompanion({
     this.id = const Value.absent(),
     this.volunteerId = const Value.absent(),
     this.subjectId = const Value.absent(),
-    this.subjectType = const Value.absent(),
+    this.subjectTypeId = const Value.absent(),
   });
   VolunteerSubjectsCompanion.insert({
     this.id = const Value.absent(),
     required int volunteerId,
     required int subjectId,
-    this.subjectType = const Value.absent(),
+    this.subjectTypeId = const Value.absent(),
   })  : volunteerId = Value(volunteerId),
         subjectId = Value(subjectId);
   static Insertable<VolunteerSubject> custom({
     Expression<int>? id,
     Expression<int>? volunteerId,
     Expression<int>? subjectId,
-    Expression<int>? subjectType,
+    Expression<int>? subjectTypeId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (volunteerId != null) 'volunteer_id': volunteerId,
       if (subjectId != null) 'subject_id': subjectId,
-      if (subjectType != null) 'subject_type': subjectType,
+      if (subjectTypeId != null) 'subject_type_id': subjectTypeId,
     });
   }
 
@@ -678,12 +857,12 @@ class VolunteerSubjectsCompanion extends UpdateCompanion<VolunteerSubject> {
       {Value<int>? id,
       Value<int>? volunteerId,
       Value<int>? subjectId,
-      Value<VolunteerSubjectType>? subjectType}) {
+      Value<int?>? subjectTypeId}) {
     return VolunteerSubjectsCompanion(
       id: id ?? this.id,
       volunteerId: volunteerId ?? this.volunteerId,
       subjectId: subjectId ?? this.subjectId,
-      subjectType: subjectType ?? this.subjectType,
+      subjectTypeId: subjectTypeId ?? this.subjectTypeId,
     );
   }
 
@@ -699,10 +878,8 @@ class VolunteerSubjectsCompanion extends UpdateCompanion<VolunteerSubject> {
     if (subjectId.present) {
       map['subject_id'] = Variable<int>(subjectId.value);
     }
-    if (subjectType.present) {
-      final converter = $VolunteerSubjectsTable.$convertersubjectType;
-
-      map['subject_type'] = Variable<int>(converter.toSql(subjectType.value));
+    if (subjectTypeId.present) {
+      map['subject_type_id'] = Variable<int>(subjectTypeId.value);
     }
     return map;
   }
@@ -713,7 +890,7 @@ class VolunteerSubjectsCompanion extends UpdateCompanion<VolunteerSubject> {
           ..write('id: $id, ')
           ..write('volunteerId: $volunteerId, ')
           ..write('subjectId: $subjectId, ')
-          ..write('subjectType: $subjectType')
+          ..write('subjectTypeId: $subjectTypeId')
           ..write(')'))
         .toString();
   }
@@ -1117,6 +1294,8 @@ abstract class _$VolunteerDatabase extends GeneratedDatabase {
   _$VolunteerDatabase(QueryExecutor e) : super(e);
   late final $VolunteersTable volunteers = $VolunteersTable(this);
   late final $SubjectsTable subjects = $SubjectsTable(this);
+  late final $VolunteerSubjectTypesTable volunteerSubjectTypes =
+      $VolunteerSubjectTypesTable(this);
   late final $VolunteerSubjectsTable volunteerSubjects =
       $VolunteerSubjectsTable(this);
   late final $GroupsTable groups = $GroupsTable(this);
@@ -1127,6 +1306,8 @@ abstract class _$VolunteerDatabase extends GeneratedDatabase {
   late final SubjectsDao subjectsDao = SubjectsDao(this as VolunteerDatabase);
   late final VolunteerSubjectsDao volunteerSubjectsDao =
       VolunteerSubjectsDao(this as VolunteerDatabase);
+  late final VolunteerSubjectTypesDao volunteerSubjectTypesDao =
+      VolunteerSubjectTypesDao(this as VolunteerDatabase);
   late final GroupsDao groupsDao = GroupsDao(this as VolunteerDatabase);
   late final VolunteerGroupsDao volunteerGroupsDao =
       VolunteerGroupsDao(this as VolunteerDatabase);
@@ -1134,8 +1315,14 @@ abstract class _$VolunteerDatabase extends GeneratedDatabase {
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [volunteers, subjects, volunteerSubjects, groups, volunteerGroups];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+        volunteers,
+        subjects,
+        volunteerSubjectTypes,
+        volunteerSubjects,
+        groups,
+        volunteerGroups
+      ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules(
         [

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'database/database.dart';
+
 /// The message to show when something is unset.
 const unsetMessage = 'Not set';
 
@@ -22,4 +24,10 @@ const renameShortcut = SingleActivator(LogicalKeyboardKey.f2);
 const detailsIcon = Icon(
   Icons.details_rounded,
   semanticLabel: 'Details',
+);
+
+/// The unset volunteer subject type.
+const unsetVolunteerSubjectType = VolunteerSubjectType(
+  id: -1,
+  name: unsetMessage,
 );

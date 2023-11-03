@@ -8,10 +8,10 @@ import 'package:recase/recase.dart';
 
 import '../constants.dart';
 import '../database/database.dart';
-import '../database/tables/volunteer_subjects.dart';
 import '../extensions.dart';
 import '../providers/providers.dart';
 import '../widgets/new_button.dart';
+import 'select_volunteer_subject_type.dart';
 
 /// Edit a particular subject.
 class EditSubjectScreen extends ConsumerStatefulWidget {
@@ -91,7 +91,8 @@ class EditSubjectScreenState extends ConsumerState<EditSubjectScreen> {
                       builder: (final context, final index) {
                         final volunteerSubjectContext = volunteers[index];
                         final volunteer = volunteerSubjectContext.volunteer;
-                        final type = volunteerSubjectContext.type;
+                        final type = volunteerSubjectContext.type ??
+                            unsetVolunteerSubjectType;
                         return SearchableListTile(
                           searchString: volunteer.name,
                           child: CommonShortcuts(
@@ -117,9 +118,8 @@ class EditSubjectScreenState extends ConsumerState<EditSubjectScreen> {
                               onTap: () => pushWidget(
                                 context: context,
                                 builder: (final context) =>
-                                    SelectItem<VolunteerSubjectType>(
-                                  values: VolunteerSubjectType.values,
-                                  onDone: (final value) async {
+                                    SelectVolunteerSubjectType(
+                                  onChanged: (final value) async {
                                     final database = await ref.read(
                                       databaseProvider.future,
                                     );
@@ -128,7 +128,7 @@ class EditSubjectScreenState extends ConsumerState<EditSubjectScreen> {
                                       volunteerSubject: volunteerSubjectContext
                                           .volunteerSubject,
                                       companion: VolunteerSubjectsCompanion(
-                                        subjectType: Value(value),
+                                        subjectTypeId: Value(value.id),
                                       ),
                                     );
                                     ref
@@ -143,12 +143,7 @@ class EditSubjectScreenState extends ConsumerState<EditSubjectScreen> {
                                         ),
                                       );
                                   },
-                                  title: 'Select Subject Type',
-                                  value: type,
-                                  getSearchString: (final value) => value.name,
-                                  getWidget: (final value) => Text(
-                                    value.name.titleCase,
-                                  ),
+                                  volunteerSubjectType: type,
                                 ),
                               ),
                             ),

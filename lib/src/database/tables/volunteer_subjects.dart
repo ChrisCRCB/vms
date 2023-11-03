@@ -1,21 +1,9 @@
 import 'package:drift/drift.dart';
 
-import '../database.dart';
 import 'mixins.dart';
 import 'subjects.dart';
+import 'volunteer_subject_types.dart';
 import 'volunteers.dart';
-
-/// The type of a [VolunteerSubject].
-enum VolunteerSubjectType {
-  /// Subject is of interest.
-  ofInterest,
-
-  /// Subject is a skill.
-  skill,
-
-  /// Subject is a no-go.
-  noGo,
-}
 
 /// A table for linking [Volunteers] to [Subjects].
 class VolunteerSubjects extends Table with IdMixin {
@@ -28,6 +16,7 @@ class VolunteerSubjects extends Table with IdMixin {
       integer().references(Subjects, #id, onDelete: KeyAction.cascade)();
 
   /// The type of the subject.
-  IntColumn get subjectType => intEnum<VolunteerSubjectType>()
-      .withDefault(Constant(VolunteerSubjectType.skill.index))();
+  IntColumn get subjectTypeId => integer()
+      .references(VolunteerSubjectTypes, #id, onDelete: KeyAction.restrict)
+      .nullable()();
 }

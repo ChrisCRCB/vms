@@ -45,7 +45,7 @@ class HomePageState extends ConsumerState<HomePage> {
           ),
           TabbedScaffoldTab(
             title: 'Groups',
-            icon: const Text('CRCB groups and sessions'),
+            icon: const Text('Groups and sessions'),
             builder: (final context) => CommonShortcuts(
               newCallback: newGroup,
               child: const GroupsTab(),

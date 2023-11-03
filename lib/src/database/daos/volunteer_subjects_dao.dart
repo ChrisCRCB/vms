@@ -65,6 +65,10 @@ class VolunteerSubjectsDao extends DatabaseAccessor<VolunteerDatabase>
         volunteers,
         volunteers.id.equalsExp(volunteerSubjects.volunteerId),
       ),
+      leftOuterJoin(
+        volunteerSubjectTypes,
+        volunteerSubjectTypes.id.equalsExp(volunteerSubjects.subjectTypeId),
+      ),
       innerJoin(subjects, subjects.id.equalsExp(volunteerSubjects.subjectId)),
     ])
       ..where(volunteerSubjects.subjectId.equals(subject.id))
@@ -76,6 +80,7 @@ class VolunteerSubjectsDao extends DatabaseAccessor<VolunteerDatabase>
             volunteer: e.readTable(volunteers),
             volunteerSubject: e.readTable(volunteerSubjects),
             subject: subject,
+            type: e.readTableOrNull(volunteerSubjectTypes),
           ),
         )
         .toList();

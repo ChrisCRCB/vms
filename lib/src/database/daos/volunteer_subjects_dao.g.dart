@@ -6,6 +6,8 @@ part of 'volunteer_subjects_dao.dart';
 mixin _$VolunteerSubjectsDaoMixin on DatabaseAccessor<VolunteerDatabase> {
   $VolunteersTable get volunteers => attachedDatabase.volunteers;
   $SubjectsTable get subjects => attachedDatabase.subjects;
+  $VolunteerSubjectTypesTable get volunteerSubjectTypes =>
+      attachedDatabase.volunteerSubjectTypes;
   $VolunteerSubjectsTable get volunteerSubjects =>
       attachedDatabase.volunteerSubjects;
 }

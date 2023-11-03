@@ -55,6 +55,12 @@ final volunteerSubjectsProvider =
       database.subjects,
       database.subjects.id.equalsExp(database.volunteerSubjects.subjectId),
     ),
+    leftOuterJoin(
+      database.volunteerSubjectTypes,
+      database.volunteerSubjectTypes.id.equalsExp(
+        database.volunteerSubjects.subjectTypeId,
+      ),
+    ),
   ])
     ..where(database.volunteerSubjects.volunteerId.equals(volunteer.id))
     ..orderBy([OrderingTerm.asc(database.subjects.name)]);
@@ -66,6 +72,7 @@ final volunteerSubjectsProvider =
         volunteer: volunteer,
         volunteerSubject: volunteerSubject,
         subject: e.readTable(database.subjects),
+        type: e.readTableOrNull(database.volunteerSubjectTypes),
       );
     },
   ).toList();
@@ -129,4 +136,19 @@ final volunteersWithSubjectProvider =
         (final ref, final subject) async {
   final database = await ref.watch(databaseProvider.future);
   return database.volunteerSubjectsDao.getVolunteersWithSubject(subject);
+});
+
+/// Provide all volunteer subject types.
+final volunteerSubjectTypesProvider =
+    FutureProvider<List<VolunteerSubjectType>>((final ref) async {
+  final database = await ref.watch(databaseProvider.future);
+  return database.volunteerSubjectTypesDao.getVolunteerSubjectTypes();
+});
+
+/// Provide a single volunteer subject type.
+final volunteerSubjectTypeProvider =
+    FutureProvider.family<VolunteerSubjectType, int>(
+        (final ref, final id) async {
+  final database = await ref.watch(databaseProvider.future);
+  return database.volunteerSubjectTypesDao.getVolunteerSubjectType(id);
 });

@@ -8,11 +8,11 @@ import 'package:recase/recase.dart';
 
 import '../constants.dart';
 import '../database/database.dart';
-import '../database/tables/volunteer_subjects.dart';
 import '../extensions.dart';
 import '../providers/providers.dart';
 import '../widgets/new_button.dart';
 import 'edit_group_screen.dart';
+import 'select_volunteer_subject_type.dart';
 
 /// The screen for editing a volunteer.
 class EditVolunteerScreen extends ConsumerWidget {
@@ -155,7 +155,8 @@ class EditVolunteerScreen extends ConsumerWidget {
                       builder: (final context, final index) {
                         final volunteerSubjectContext = data[index];
                         final subject = volunteerSubjectContext.subject;
-                        final type = volunteerSubjectContext.type;
+                        final type = volunteerSubjectContext.type ??
+                            unsetVolunteerSubjectType;
                         final typeName = type.name.titleCase;
                         return SearchableListTile(
                           searchString: subject.name,
@@ -179,9 +180,8 @@ class EditVolunteerScreen extends ConsumerWidget {
                               onTap: () => pushWidget(
                                 context: context,
                                 builder: (final context) =>
-                                    SelectItem<VolunteerSubjectType>(
-                                  values: VolunteerSubjectType.values,
-                                  onDone: (final value) async {
+                                    SelectVolunteerSubjectType(
+                                  onChanged: (final value) async {
                                     final database = await ref.read(
                                       databaseProvider.future,
                                     );
@@ -190,7 +190,7 @@ class EditVolunteerScreen extends ConsumerWidget {
                                       volunteerSubject: volunteerSubjectContext
                                           .volunteerSubject,
                                       companion: VolunteerSubjectsCompanion(
-                                        subjectType: Value(value),
+                                        subjectTypeId: Value(value.id),
                                       ),
                                     );
                                     ref
@@ -205,12 +205,7 @@ class EditVolunteerScreen extends ConsumerWidget {
                                         ),
                                       );
                                   },
-                                  title: 'Select Subject Type',
-                                  value: type,
-                                  getSearchString: (final value) => value.name,
-                                  getWidget: (final value) => Text(
-                                    value.name.titleCase,
-                                  ),
+                                  volunteerSubjectType: type,
                                 ),
                               ),
                             ),

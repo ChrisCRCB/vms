@@ -1,5 +1,4 @@
 import '../database/database.dart';
-import '../database/tables/volunteer_subjects.dart';
 
 /// A class for holding details of a [VolunteerSubject].
 class VolunteerSubjectContext {
@@ -8,6 +7,7 @@ class VolunteerSubjectContext {
     required this.volunteer,
     required this.volunteerSubject,
     required this.subject,
+    required this.type,
   });
 
   /// The volunteer to use.
@@ -20,5 +20,5 @@ class VolunteerSubjectContext {
   final Subject subject;
 
   /// The type of subject.
-  VolunteerSubjectType get type => volunteerSubject.subjectType;
+  final VolunteerSubjectType? type;
 }
