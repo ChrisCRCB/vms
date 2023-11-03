@@ -109,6 +109,13 @@ final groupProvider =
   return database.groupsDao.getGroup(id);
 });
 
+/// Provide a single subject.
+final subjectProvider =
+    FutureProvider.family<Subject, int>((final ref, final id) async {
+  final database = await ref.watch(databaseProvider.future);
+  return database.subjectsDao.getSubject(id);
+});
+
 /// Provide all the volunteers in a particular group.
 final volunteersInGroupProvider = FutureProvider.family<List<Volunteer>, Group>(
     (final ref, final group) async {
