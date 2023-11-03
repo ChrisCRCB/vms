@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 
+import '../../providers/volunteer_subject_context.dart';
 import '../database.dart';
 import '../tables/volunteer_subjects.dart';
 
@@ -54,4 +55,29 @@ class VolunteerSubjectsDao extends DatabaseAccessor<VolunteerDatabase>
             ..where((final table) => table.volunteerId.equals(volunteer.id))
             ..orderBy([(final table) => OrderingTerm.asc(subjects.name)]))
           .get();
+
+  /// Get the volunteers with [subject].
+  Future<List<VolunteerSubjectContext>> getVolunteersWithSubject(
+    final Subject subject,
+  ) async {
+    final query = select(volunteerSubjects).join([
+      innerJoin(
+        volunteers,
+        volunteers.id.equalsExp(volunteerSubjects.volunteerId),
+      ),
+      innerJoin(subjects, subjects.id.equalsExp(volunteerSubjects.subjectId)),
+    ])
+      ..where(volunteerSubjects.subjectId.equals(subject.id))
+      ..orderBy([OrderingTerm.asc(volunteers.name)]);
+    final results = await query.get();
+    return results
+        .map(
+          (final e) => VolunteerSubjectContext(
+            volunteer: e.readTable(volunteers),
+            volunteerSubject: e.readTable(volunteerSubjects),
+            subject: subject,
+          ),
+        )
+        .toList();
+  }
 }

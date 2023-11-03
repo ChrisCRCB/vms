@@ -9,6 +9,7 @@ import '../widgets/new_button.dart';
 import '../widgets/tabs/groups_tab.dart';
 import '../widgets/tabs/subjects_tab.dart';
 import '../widgets/tabs/volunteers_tab.dart';
+import 'edit_group_screen.dart';
 import 'edit_volunteer_screen.dart';
 
 /// The home page for the app.
@@ -86,8 +87,14 @@ class HomePageState extends ConsumerState<HomePage> {
   /// Create a new group.
   Future<void> newGroup() async {
     final database = await ref.read(databaseProvider.future);
-    await database.groupsDao.createGroup('Untitled Group');
+    final group = await database.groupsDao.createGroup('Untitled Group');
     ref.invalidate(groupsProvider);
+    if (mounted) {
+      await pushWidget(
+        context: context,
+        builder: (final context) => EditGroupScreen(groupId: group.id),
+      );
+    }
   }
 
   /// Create a new subject.

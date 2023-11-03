@@ -12,6 +12,7 @@ import '../database/tables/volunteer_subjects.dart';
 import '../extensions.dart';
 import '../providers/providers.dart';
 import '../widgets/new_button.dart';
+import 'edit_group_screen.dart';
 
 /// The screen for editing a volunteer.
 class EditVolunteerScreen extends ConsumerWidget {
@@ -103,14 +104,23 @@ class EditVolunteerScreen extends ConsumerWidget {
                                   .deleteVolunteerGroup(
                                 volunteerGroupContext.volunteerGroup,
                               );
-                              ref.invalidate(
-                                volunteerGroupsProvider.call(volunteer),
-                              );
+                              ref
+                                ..invalidate(
+                                  volunteerGroupsProvider.call(volunteer),
+                                )
+                                ..invalidate(
+                                  volunteersInGroupProvider.call(group),
+                                );
                             },
                             child: ListTile(
                               autofocus: index == 0,
                               title: Text(group.name),
-                              onTap: () {},
+                              onTap: () => pushWidget(
+                                context: context,
+                                builder: (final context) => EditGroupScreen(
+                                  groupId: group.id,
+                                ),
+                              ),
                             ),
                           ),
                         );

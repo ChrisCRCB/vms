@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
 /// The message to show when something is unset.
 const unsetMessage = 'Not set';
 
@@ -11,3 +14,6 @@ String? notEmptyValidator(final String? value) {
   }
   return null;
 }
+
+/// The rename keyboard shortcut.
+const renameShortcut = SingleActivator(LogicalKeyboardKey.f2);

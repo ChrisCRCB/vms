@@ -66,7 +66,6 @@ final volunteerSubjectsProvider =
         volunteer: volunteer,
         volunteerSubject: volunteerSubject,
         subject: e.readTable(database.subjects),
-        type: volunteerSubject.subjectType,
       );
     },
   ).toList();
@@ -101,4 +100,26 @@ final volunteerGroupsProvider =
         ),
       )
       .toList();
+});
+
+/// Provide a single group.
+final groupProvider =
+    FutureProvider.family<Group, int>((final ref, final id) async {
+  final database = await ref.watch(databaseProvider.future);
+  return database.groupsDao.getGroup(id);
+});
+
+/// Provide all the volunteers in a particular group.
+final volunteersInGroupProvider = FutureProvider.family<List<Volunteer>, Group>(
+    (final ref, final group) async {
+  final database = await ref.watch(databaseProvider.future);
+  return database.volunteerGroupsDao.getVolunteersInGroup(group);
+});
+
+/// Provide the volunteers with a particular subject.
+final volunteersWithSubjectProvider =
+    FutureProvider.family<List<VolunteerSubjectContext>, Subject>(
+        (final ref, final subject) async {
+  final database = await ref.watch(databaseProvider.future);
+  return database.volunteerSubjectsDao.getVolunteersWithSubject(subject);
 });

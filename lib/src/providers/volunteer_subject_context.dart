@@ -8,7 +8,6 @@ class VolunteerSubjectContext {
     required this.volunteer,
     required this.volunteerSubject,
     required this.subject,
-    required this.type,
   });
 
   /// The volunteer to use.
@@ -21,5 +20,5 @@ class VolunteerSubjectContext {
   final Subject subject;
 
   /// The type of subject.
-  final VolunteerSubjectType type;
+  VolunteerSubjectType get type => volunteerSubject.subjectType;
 }

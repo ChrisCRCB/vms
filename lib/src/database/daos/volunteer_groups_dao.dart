@@ -2,11 +2,12 @@ import 'package:drift/drift.dart';
 
 import '../database.dart';
 import '../tables/volunteer_groups.dart';
+import '../tables/volunteers.dart';
 
 part 'volunteer_groups_dao.g.dart';
 
 /// The volunteer groups DAO.
-@DriftAccessor(tables: [VolunteerGroups])
+@DriftAccessor(tables: [VolunteerGroups, Volunteers])
 class VolunteerGroupsDao extends DatabaseAccessor<VolunteerDatabase>
     with _$VolunteerGroupsDaoMixin {
   /// Create an instance.
@@ -54,4 +55,18 @@ class VolunteerGroupsDao extends DatabaseAccessor<VolunteerDatabase>
             ..where((final table) => table.volunteerId.equals(volunteer.id))
             ..orderBy([(final table) => OrderingTerm.asc(groups.name)]))
           .get();
+
+  /// Get the volunteers which help out in [group].
+  Future<List<Volunteer>> getVolunteersInGroup(final Group group) async {
+    final query = select(volunteerGroups).join([
+      innerJoin(
+        volunteers,
+        volunteers.id.equalsExp(volunteerGroups.volunteerId),
+      ),
+    ])
+      ..where(volunteerGroups.groupId.equals(group.id))
+      ..orderBy([OrderingTerm.asc(volunteers.name)]);
+    final results = await query.get();
+    return results.map((final e) => e.readTable(volunteers)).toList();
+  }
 }
