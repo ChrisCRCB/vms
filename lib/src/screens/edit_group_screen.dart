@@ -40,10 +40,7 @@ class EditGroupScreenState extends ConsumerState<EditGroupScreen> {
           tabs: [
             TabbedScaffoldTab(
               title: 'Group Details',
-              icon: const Icon(
-                Icons.details_rounded,
-                semanticLabel: 'Details',
-              ),
+              icon: detailsIcon,
               builder: (final context) => ListView(
                 children: [
                   TextListTile(

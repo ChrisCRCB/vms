@@ -17,3 +17,9 @@ String? notEmptyValidator(final String? value) {
 
 /// The rename keyboard shortcut.
 const renameShortcut = SingleActivator(LogicalKeyboardKey.f2);
+
+/// The details icon to use.
+const detailsIcon = Icon(
+  Icons.details_rounded,
+  semanticLabel: 'Details',
+);

@@ -10,6 +10,7 @@ import '../widgets/tabs/groups_tab.dart';
 import '../widgets/tabs/subjects_tab.dart';
 import '../widgets/tabs/volunteers_tab.dart';
 import 'edit_group_screen.dart';
+import 'edit_subject_screen.dart';
 import 'edit_volunteer_screen.dart';
 
 /// The home page for the app.
@@ -100,7 +101,14 @@ class HomePageState extends ConsumerState<HomePage> {
   /// Create a new subject.
   Future<void> newSubject() async {
     final database = await ref.read(databaseProvider.future);
-    await database.subjectsDao.createSubject('Untitled Subject');
+    final subject =
+        await database.subjectsDao.createSubject('Untitled Subject');
     ref.invalidate(subjectsProvider);
+    if (mounted) {
+      await pushWidget(
+        context: context,
+        builder: (final context) => EditSubjectScreen(subjectId: subject.id),
+      );
+    }
   }
 }

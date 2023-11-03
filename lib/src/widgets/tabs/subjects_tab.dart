@@ -8,6 +8,7 @@ import '../../constants.dart';
 import '../../database/database.dart';
 import '../../extensions.dart';
 import '../../providers/providers.dart';
+import '../../screens/edit_subject_screen.dart';
 
 /// The subjects tab.
 class SubjectsTab extends ConsumerWidget {
@@ -33,42 +34,52 @@ class SubjectsTab extends ConsumerWidget {
           final subject = data[index];
           return SearchableListTile(
             searchString: subject.name,
-            child: CommonShortcuts(
-              deleteCallback: () => confirm(
-                context: context,
-                message: 'Delete ${subject.name}?',
-                title: confirmDeleteTitle,
-                yesCallback: () async {
-                  Navigator.pop(context);
-                  final database = await ref.read(databaseProvider.future);
-                  await database.subjectsDao.deleteSubject(subject);
-                  ref.invalidate(subjectsProvider);
-                },
-              ),
-              child: ListTile(
-                autofocus: index == 0,
-                title: Text(subject.name),
-                onTap: () => pushWidget(
+            child: CallbackShortcuts(
+              bindings: {
+                renameShortcut: () => pushWidget(
+                      context: context,
+                      builder: (final context) => GetText(
+                        onDone: (final value) async {
+                          Navigator.pop(context);
+                          final database = await ref.read(
+                            databaseProvider.future,
+                          );
+                          await database.subjectsDao.editSubject(
+                            subject: subject,
+                            companion: SubjectsCompanion(name: Value(value)),
+                          );
+                          ref
+                            ..invalidate(subjectsProvider)
+                            ..invalidate(volunteerSubjectsProvider);
+                        },
+                        labelText: 'Name',
+                        text: subject.name,
+                        title: 'Subject Name',
+                        tooltip: 'Save',
+                        validator: notEmptyValidator,
+                      ),
+                    ),
+              },
+              child: CommonShortcuts(
+                deleteCallback: () => confirm(
                   context: context,
-                  builder: (final context) => GetText(
-                    onDone: (final value) async {
-                      Navigator.pop(context);
-                      final database = await ref.read(
-                        databaseProvider.future,
-                      );
-                      await database.subjectsDao.editSubject(
-                        subject: subject,
-                        companion: SubjectsCompanion(name: Value(value)),
-                      );
-                      ref
-                        ..invalidate(subjectsProvider)
-                        ..invalidate(volunteerSubjectsProvider);
-                    },
-                    labelText: 'Name',
-                    text: subject.name,
-                    title: 'Subject Name',
-                    tooltip: 'Save',
-                    validator: notEmptyValidator,
+                  message: 'Delete ${subject.name}?',
+                  title: confirmDeleteTitle,
+                  yesCallback: () async {
+                    Navigator.pop(context);
+                    final database = await ref.read(databaseProvider.future);
+                    await database.subjectsDao.deleteSubject(subject);
+                    ref.invalidate(subjectsProvider);
+                  },
+                ),
+                child: ListTile(
+                  autofocus: index == 0,
+                  title: Text(subject.name),
+                  onTap: () => pushWidget(
+                    context: context,
+                    builder: (final context) => EditSubjectScreen(
+                      subjectId: subject.id,
+                    ),
                   ),
                 ),
               ),

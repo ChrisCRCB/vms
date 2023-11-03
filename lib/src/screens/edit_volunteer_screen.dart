@@ -35,7 +35,7 @@ class EditVolunteerScreen extends ConsumerWidget {
           tabs: [
             TabbedScaffoldTab(
               title: 'Volunteer Details',
-              icon: const Icon(Icons.details_rounded),
+              icon: detailsIcon,
               builder: (final context) => ListView(
                 children: [
                   TextListTile(
@@ -193,11 +193,17 @@ class EditVolunteerScreen extends ConsumerWidget {
                                         subjectType: Value(value),
                                       ),
                                     );
-                                    ref.invalidate(
-                                      volunteerSubjectsProvider.call(
-                                        volunteer,
-                                      ),
-                                    );
+                                    ref
+                                      ..invalidate(
+                                        volunteerSubjectsProvider.call(
+                                          volunteer,
+                                        ),
+                                      )
+                                      ..invalidate(
+                                        volunteersWithSubjectProvider.call(
+                                          subject,
+                                        ),
+                                      );
                                   },
                                   title: 'Select Subject Type',
                                   value: type,
