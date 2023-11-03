@@ -8,6 +8,7 @@ import '../providers/providers.dart';
 import '../widgets/new_button.dart';
 import '../widgets/tabs/groups_tab.dart';
 import '../widgets/tabs/subjects_tab.dart';
+import '../widgets/tabs/volunteer_subject_types_tab.dart';
 import '../widgets/tabs/volunteers_tab.dart';
 import 'edit_group_screen.dart';
 import 'edit_subject_screen.dart';
@@ -67,6 +68,18 @@ class HomePageState extends ConsumerState<HomePage> {
               tooltip: 'New Subject',
             ),
           ),
+          TabbedScaffoldTab(
+            title: 'Subject Types',
+            icon: const Text('The created subject types'),
+            builder: (final context) => CommonShortcuts(
+              newCallback: newVolunteerSubjectType,
+              child: const VolunteerSubjectTypesTab(),
+            ),
+            floatingActionButton: NewButton(
+              onPressed: newVolunteerSubjectType,
+              tooltip: 'New Subject Type',
+            ),
+          ),
         ],
       );
 
@@ -111,4 +124,18 @@ class HomePageState extends ConsumerState<HomePage> {
       );
     }
   }
+
+  /// Create a new subject type.
+  Future<void> newVolunteerSubjectType() => pushWidget(
+        context: context,
+        builder: (final context) => GetText(
+          onDone: (final value) async {
+            Navigator.pop(context);
+            final database = await ref.read(databaseProvider.future);
+            await database.volunteerSubjectTypesDao
+                .createVolunteerSubjectType(value);
+            ref.invalidate(volunteerSubjectTypesProvider);
+          },
+        ),
+      );
 }

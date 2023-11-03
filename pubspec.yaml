@@ -14,7 +14,6 @@ dependencies:
   flutter_riverpod: ^2.4.5
   path: ^1.8.3
   path_provider: ^2.1.1
-  recase: ^4.1.0
   sqlite3_flutter_libs: ^0.5.18
 
 dev_dependencies:

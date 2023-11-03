@@ -4,7 +4,6 @@ import 'package:backstreets_widgets/widgets.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:recase/recase.dart';
 
 import '../constants.dart';
 import '../database/database.dart';
@@ -157,7 +156,7 @@ class EditVolunteerScreen extends ConsumerWidget {
                         final subject = volunteerSubjectContext.subject;
                         final type = volunteerSubjectContext.type ??
                             unsetVolunteerSubjectType;
-                        final typeName = type.name.titleCase;
+                        final typeName = type.name;
                         return SearchableListTile(
                           searchString: subject.name,
                           child: CommonShortcuts(

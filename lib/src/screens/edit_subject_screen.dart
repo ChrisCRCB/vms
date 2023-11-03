@@ -4,7 +4,6 @@ import 'package:backstreets_widgets/widgets.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:recase/recase.dart';
 
 import '../constants.dart';
 import '../database/database.dart';
@@ -114,7 +113,7 @@ class EditSubjectScreenState extends ConsumerState<EditSubjectScreen> {
                             child: ListTile(
                               autofocus: index == 0,
                               title: Text(volunteer.name),
-                              subtitle: Text(type.name.titleCase),
+                              subtitle: Text(type.name),
                               onTap: () => pushWidget(
                                 context: context,
                                 builder: (final context) =>

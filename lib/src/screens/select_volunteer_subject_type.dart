@@ -1,7 +1,6 @@
 import 'package:backstreets_widgets/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:recase/recase.dart';
 
 import '../database/database.dart';
 import '../providers/providers.dart';
@@ -30,10 +29,10 @@ class SelectVolunteerSubjectType extends ConsumerWidget {
         values: types,
         onDone: onChanged,
         title: 'Select Subject Type',
-        value: volunteerSubjectType,
+        value: volunteerSubjectType.id <= 0 ? null : volunteerSubjectType,
         getSearchString: (final value) => value.name,
         getWidget: (final value) => Text(
-          value.name.titleCase,
+          value.name,
         ),
       ),
       error: ErrorScreen.withPositional,
