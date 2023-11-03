@@ -76,8 +76,9 @@ class HomePageState extends ConsumerState<HomePage> {
     if (mounted) {
       await pushWidget(
         context: context,
-        builder: (final context) =>
-            EditVolunteerScreen(volunteerId: volunteer.id),
+        builder: (final context) => EditVolunteerScreen(
+          volunteerId: volunteer.id,
+        ),
       );
     }
   }

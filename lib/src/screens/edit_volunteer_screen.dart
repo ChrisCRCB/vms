@@ -1,4 +1,5 @@
 import 'package:backstreets_widgets/screens.dart';
+import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
@@ -7,8 +8,10 @@ import 'package:recase/recase.dart';
 
 import '../constants.dart';
 import '../database/database.dart';
+import '../database/tables/volunteer_subjects.dart';
 import '../extensions.dart';
 import '../providers/providers.dart';
+import '../widgets/new_button.dart';
 
 /// The screen for editing a volunteer.
 class EditVolunteerScreen extends ConsumerWidget {
@@ -30,7 +33,7 @@ class EditVolunteerScreen extends ConsumerWidget {
         data: (final volunteer) => TabbedScaffold(
           tabs: [
             TabbedScaffoldTab(
-              title: 'Details',
+              title: 'Volunteer Details',
               icon: const Icon(Icons.details_rounded),
               builder: (final context) => ListView(
                 children: [
@@ -68,99 +71,144 @@ class EditVolunteerScreen extends ConsumerWidget {
             ),
             TabbedScaffoldTab(
               title: 'Groups',
-              icon: const Text('The groups this volunteer helps out at'),
+              icon: Text('The groups ${volunteer.name} helps out at'),
               builder: (final context) {
                 final groupsValue = ref.watch(
                   volunteerGroupsProvider.call(volunteer),
                 );
-                return groupsValue.simpleWhen((final data) {
-                  if (data.isEmpty) {
-                    return CenterText(
-                      text: '${volunteer.name} does not currently help out at '
-                          'any groups.',
-                      autofocus: true,
-                    );
-                  }
-                  return BuiltSearchableListView(
-                    items: data,
-                    builder: (final context, final index) {
-                      final volunteerGroupContext = data[index];
-                      final group = volunteerGroupContext.group;
-                      return SearchableListTile(
-                        searchString: group.name,
-                        child: CommonShortcuts(
-                          deleteCallback: () async {
-                            final database = await ref.read(
-                              databaseProvider.future,
-                            );
-                            await database.volunteerGroupsDao
-                                .deleteVolunteerGroup(
-                              volunteerGroupContext.volunteerGroup,
-                            );
-                            ref.invalidate(
-                              volunteerGroupsProvider.call(volunteer),
-                            );
-                          },
-                          child: ListTile(
-                            autofocus: index == 0,
-                            title: Text(group.name),
-                            onTap: () {},
-                          ),
-                        ),
+                return CommonShortcuts(
+                  newCallback: () => addGroup(context, ref),
+                  child: groupsValue.simpleWhen((final data) {
+                    if (data.isEmpty) {
+                      return CenterText(
+                        text:
+                            '${volunteer.name} does not currently help out at '
+                            'any groups.',
+                        autofocus: true,
                       );
-                    },
-                  );
-                });
+                    }
+                    return BuiltSearchableListView(
+                      items: data,
+                      builder: (final context, final index) {
+                        final volunteerGroupContext = data[index];
+                        final group = volunteerGroupContext.group;
+                        return SearchableListTile(
+                          searchString: group.name,
+                          child: CommonShortcuts(
+                            deleteCallback: () async {
+                              final database = await ref.read(
+                                databaseProvider.future,
+                              );
+                              await database.volunteerGroupsDao
+                                  .deleteVolunteerGroup(
+                                volunteerGroupContext.volunteerGroup,
+                              );
+                              ref.invalidate(
+                                volunteerGroupsProvider.call(volunteer),
+                              );
+                            },
+                            child: ListTile(
+                              autofocus: index == 0,
+                              title: Text(group.name),
+                              onTap: () {},
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }),
+                );
               },
+              floatingActionButton: NewButton(
+                onPressed: () => addGroup(context, ref),
+                tooltip: 'Add Group',
+              ),
             ),
             TabbedScaffoldTab(
               title: 'Subjects',
-              icon: const Text('Volunteer subjects'),
+              icon: Text("${volunteer.name}'s subjects"),
               builder: (final context) {
                 final subjectsValue = ref.watch(
                   volunteerSubjectsProvider.call(volunteer),
                 );
-                return subjectsValue.simpleWhen((final data) {
-                  if (data.isEmpty) {
-                    return const CenterText(
-                      text: 'No subjects have been added.',
-                      autofocus: true,
-                    );
-                  }
-                  return BuiltSearchableListView(
-                    items: data,
-                    builder: (final context, final index) {
-                      final volunteerSubjectContext = data[index];
-                      final subject = volunteerSubjectContext.subject;
-                      final typeName =
-                          volunteerSubjectContext.type.name.titleCase;
-                      return SearchableListTile(
-                        searchString: subject.name,
-                        child: CommonShortcuts(
-                          deleteCallback: () async {
-                            final database = await ref.read(
-                              databaseProvider.future,
-                            );
-                            await database.volunteerSubjectsDao
-                                .deleteVolunteerSubject(
-                              volunteerSubjectContext.volunteerSubject,
-                            );
-                            ref.invalidate(
-                              volunteerSubjectsProvider.call(volunteer),
-                            );
-                          },
-                          child: ListTile(
-                            autofocus: index == 0,
-                            title: Text(subject.name),
-                            subtitle: Text(typeName),
-                            onTap: () {},
-                          ),
-                        ),
+                return CommonShortcuts(
+                  newCallback: () => addSubject(context, ref),
+                  child: subjectsValue.simpleWhen((final data) {
+                    if (data.isEmpty) {
+                      return const CenterText(
+                        text: 'No subjects have been added.',
+                        autofocus: true,
                       );
-                    },
-                  );
-                });
+                    }
+                    return BuiltSearchableListView(
+                      items: data,
+                      builder: (final context, final index) {
+                        final volunteerSubjectContext = data[index];
+                        final subject = volunteerSubjectContext.subject;
+                        final type = volunteerSubjectContext.type;
+                        final typeName = type.name.titleCase;
+                        return SearchableListTile(
+                          searchString: subject.name,
+                          child: CommonShortcuts(
+                            deleteCallback: () async {
+                              final database = await ref.read(
+                                databaseProvider.future,
+                              );
+                              await database.volunteerSubjectsDao
+                                  .deleteVolunteerSubject(
+                                volunteerSubjectContext.volunteerSubject,
+                              );
+                              ref.invalidate(
+                                volunteerSubjectsProvider.call(volunteer),
+                              );
+                            },
+                            child: ListTile(
+                              autofocus: index == 0,
+                              title: Text(subject.name),
+                              subtitle: Text(typeName),
+                              onTap: () => pushWidget(
+                                context: context,
+                                builder: (final context) =>
+                                    SelectItem<VolunteerSubjectType>(
+                                  values: VolunteerSubjectType.values,
+                                  onDone: (final value) async {
+                                    final database = await ref.read(
+                                      databaseProvider.future,
+                                    );
+                                    await database.volunteerSubjectsDao
+                                        .editVolunteerSubject(
+                                      volunteerSubject: volunteerSubjectContext
+                                          .volunteerSubject,
+                                      companion: VolunteerSubjectsCompanion(
+                                        subjectType: Value(value),
+                                      ),
+                                    );
+                                    ref.invalidate(
+                                      volunteerSubjectsProvider.call(
+                                        volunteer,
+                                      ),
+                                    );
+                                  },
+                                  title: 'Select Subject Type',
+                                  value: type,
+                                  getSearchString: (final value) => value.name,
+                                  getWidget: (final value) => Text(
+                                    value.name.titleCase,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }),
+                );
               },
+              floatingActionButton: NewButton(
+                onPressed: () => addSubject(context, ref),
+                tooltip: 'Add Subject',
+              ),
             ),
           ],
         ),
@@ -184,4 +232,72 @@ class EditVolunteerScreen extends ConsumerWidget {
       ..invalidate(volunteerProvider.call(volunteerId))
       ..invalidate(volunteersProvider);
   }
+
+  /// Add a group to the volunteer.
+  Future<void> addGroup(final BuildContext context, final WidgetRef ref) =>
+      pushWidget(
+        context: context,
+        builder: (final context) {
+          final groupsValue = ref.read(groupsProvider);
+          return groupsValue.when(
+            data: (final groups) => SelectItem<Group>(
+              values: groups,
+              getSearchString: (final group) => group.name,
+              title: 'Select Group',
+              getWidget: (final group) => Text(group.name),
+              onDone: (final group) async {
+                final volunteer = await ref.read(
+                  volunteerProvider.call(volunteerId).future,
+                );
+                final database = await ref.read(
+                  databaseProvider.future,
+                );
+                await database.volunteerGroupsDao.createVolunteerGroup(
+                  volunteer: volunteer,
+                  group: group,
+                );
+                ref.invalidate(
+                  volunteerGroupsProvider.call(volunteer),
+                );
+              },
+            ),
+            error: ErrorScreen.withPositional,
+            loading: LoadingScreen.new,
+          );
+        },
+      );
+
+  /// Add a subject to the volunteer.
+  Future<void> addSubject(final BuildContext context, final WidgetRef ref) =>
+      pushWidget(
+        context: context,
+        builder: (final context) {
+          final subjectsValue = ref.read(subjectsProvider);
+          return subjectsValue.when(
+            data: (final subjects) => SelectItem<Subject>(
+              values: subjects,
+              getSearchString: (final subject) => subject.name,
+              title: 'Select Subject',
+              getWidget: (final subject) => Text(subject.name),
+              onDone: (final subject) async {
+                final volunteer = await ref.read(
+                  volunteerProvider.call(volunteerId).future,
+                );
+                final database = await ref.read(
+                  databaseProvider.future,
+                );
+                await database.volunteerSubjectsDao.createVolunteerSubject(
+                  volunteer: volunteer,
+                  subject: subject,
+                );
+                ref.invalidate(
+                  volunteerSubjectsProvider.call(volunteer),
+                );
+              },
+            ),
+            error: ErrorScreen.withPositional,
+            loading: LoadingScreen.new,
+          );
+        },
+      );
 }
