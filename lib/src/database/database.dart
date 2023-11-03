@@ -46,6 +46,9 @@ class VolunteerDatabase extends _$VolunteerDatabase {
   /// Perform migration.
   @override
   MigrationStrategy get migration => MigrationStrategy(
+        beforeOpen: (final details) async {
+          await customStatement('PRAGMA foreign_keys = ON');
+        },
         onCreate: (final m) => m.createAll(),
         onUpgrade: (final m, final from, final to) async {},
       );
