@@ -9,6 +9,7 @@ import '../constants.dart';
 import '../database/database.dart';
 import '../extensions.dart';
 import '../providers/providers.dart';
+import '../widgets/launch_url_widget.dart';
 import '../widgets/new_button.dart';
 import 'edit_group_screen.dart';
 import 'select_volunteer_subject_type.dart';
@@ -35,39 +36,49 @@ class EditVolunteerScreen extends ConsumerWidget {
             TabbedScaffoldTab(
               title: 'Volunteer Details',
               icon: detailsIcon,
-              builder: (final context) => ListView(
-                children: [
-                  TextListTile(
-                    value: volunteer.name,
-                    onChanged: (final value) => editVolunteer(
-                      ref,
-                      VolunteersCompanion(name: Value(value)),
+              builder: (final context) {
+                final phoneNumber = volunteer.phoneNumber;
+                final emailAddress = volunteer.emailAddress;
+                return ListView(
+                  children: [
+                    TextListTile(
+                      value: volunteer.name,
+                      onChanged: (final value) => editVolunteer(
+                        ref,
+                        VolunteersCompanion(name: Value(value)),
+                      ),
+                      header: 'Name',
+                      autofocus: true,
                     ),
-                    header: 'Name',
-                    autofocus: true,
-                  ),
-                  TextListTile(
-                    value: volunteer.phoneNumber ?? unsetMessage,
-                    onChanged: (final value) => editVolunteer(
-                      ref,
-                      VolunteersCompanion(
-                        phoneNumber: Value(value.isEmpty ? null : value),
+                    LaunchUrlWidget(
+                      url: phoneNumber == null ? null : 'tel:$phoneNumber',
+                      child: TextListTile(
+                        value: phoneNumber ?? unsetMessage,
+                        onChanged: (final value) => editVolunteer(
+                          ref,
+                          VolunteersCompanion(
+                            phoneNumber: Value(value.isEmpty ? null : value),
+                          ),
+                        ),
+                        header: 'Phone Number',
                       ),
                     ),
-                    header: 'Phone Number',
-                  ),
-                  TextListTile(
-                    value: volunteer.emailAddress ?? unsetMessage,
-                    onChanged: (final value) => editVolunteer(
-                      ref,
-                      VolunteersCompanion(
-                        emailAddress: Value(value.isEmpty ? null : value),
+                    LaunchUrlWidget(
+                      url: emailAddress == null ? null : 'mailto:$emailAddress',
+                      child: TextListTile(
+                        value: emailAddress ?? unsetMessage,
+                        onChanged: (final value) => editVolunteer(
+                          ref,
+                          VolunteersCompanion(
+                            emailAddress: Value(value.isEmpty ? null : value),
+                          ),
+                        ),
+                        header: 'Email Address',
                       ),
                     ),
-                    header: 'Email Address',
-                  ),
-                ],
-              ),
+                  ],
+                );
+              },
             ),
             TabbedScaffoldTab(
               title: 'Groups',
